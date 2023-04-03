@@ -1,0 +1,84 @@
+stages:
+  - test
+  - allure
+  - deploy
+
+.download_history: &download_history
+  after_script:
+    - apt-get install -y unzip
+    - mkdir backup && cd backup || true
+    - curl --location --output report.zip --request GET https://gitlab.com/api/v4/projects/38243122/jobs/artifacts/main/download\?job\=pages || true
+    - (unzip report.zip) || true
+    - cd ../
+    - (cp -r backup/public/history/ allure-results/history) || true
+
+.test_template: &test_template
+  allow_failure: true
+  image: atools/chrome-headless:java11-node16-latest
+  stage: test
+  script:
+    - apt update && apt install wget
+    - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+    - sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+    - apt update && apt install -y google-chrome-stable
+    - google-chrome --version
+    - npm install
+    - npm run test:headless -- --browser=chrome
+    - npm run sauce:ios
+    - npm run sauce:android
+
+  artifacts:
+    when: always
+    paths:
+      - allure-results/
+
+chrome:
+  <<: *test_template
+  <<: *download_history
+
+# firefox:
+#   image: atools/chrome-headless:java11-node16-latest
+#   script:
+#     - apt update && apt install wget libx11-xcb1 libxt-dev libgtk-3-bin libdbus-glib-1-2 -y
+#     - wget -O ~/FirefoxSetup.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64"
+#     - tar xjf ~/FirefoxSetup.tar.bz2 -C /opt/ && mv /opt/firefox/ /opt/firefox-latest/
+#     - ln -fs /opt/firefox-latest/firefox /usr/bin/firefox && cat /opt/firefox-latest/application.ini
+#     - rm -rf /var/lib/apt/lists/* /var/cache/apt/*
+#     - npm install
+#     - npm run test:headless -- --browser=firefox
+#   artifacts:
+#     when: always
+#     paths:
+#       - allure-results
+
+allure_report:
+  stage: allure
+  when: always
+  image: timbru31/java-node
+  dependencies: 
+    - chrome
+  script:
+    - npm install
+    - npx allure generate #change allure command specific to your framework
+  artifacts:
+    when: always
+    paths:
+      - allure-report/
+      - allure-results/
+  only:
+    - main
+  
+pages:
+  stage: deploy
+  when: always
+  image: timbru31/java-node
+  dependencies:
+    - allure_report
+  script:
+    - mv allure-report/ public/
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+  only:
+    - main
