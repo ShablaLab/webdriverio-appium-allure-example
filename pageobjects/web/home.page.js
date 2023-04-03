@@ -2,7 +2,7 @@ import Page from './page';
 
 class HomePage extends Page {
     get flashAlert () {
-        return $('.Notification-Text');
+        return $('.app_logo');
     }
 }
 

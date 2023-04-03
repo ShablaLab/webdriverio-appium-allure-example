@@ -1,11 +1,8 @@
 import Page from './page';
 
 class LoginPage extends Page {
-    get btnMyAccount() {
-        return $('#myAccount');
-    }
     get inputUsername() {
-        return $('#email');
+        return $('#user-name');
     }
 
     get inputPassword() {
@@ -13,17 +10,11 @@ class LoginPage extends Page {
     }
 
     get btnSubmit() {
-        return $('.MyAccountOverlay-SignInButton>button');
-    }
-
-    get flashAlert() {
-        return $('.Notification-Text');
+        return $('#login-button');
     }
 
     async login(username, password) {
-        await this.btnMyAccount.click();
-        await driver.pause(15000);
-        await this.waitUntilAuthGoogleNotDisplayed();
+        await this.waitUntilLoginDisplayed();
         await this.inputUsername.setValue(username);
         await this.inputPassword.setValue(password);
         await driver.pause(100);
@@ -34,8 +25,8 @@ class LoginPage extends Page {
         return await super.open();
     }
 
-    async waitUntilAuthGoogleNotDisplayed() {
-        await this.flashAlert.waitForDisplayed({ reverse: true });
+    async waitUntilLoginDisplayed() {
+        await this.inputUsername.waitForDisplayed();
     }
 }
 
