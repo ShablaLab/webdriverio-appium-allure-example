@@ -1,50 +1,28 @@
-import Page from './page'
+import Page from "./page";
 
 class LoginPage extends Page {
-    get btnMyAccount() {
-        return $$('.NavigationTabs-Button')[3]
-    }
-    get inputUsername() {
-        return $('#email')
-    }
+  get inputUsername() {
+    return $("~test-Username");
+  }
 
-    get inputPassword() {
-        return $('#password')
-    }
+  get inputPassword() {
+    return $("~test-Password");
+  }
 
-    get btnSubmit() {
-        return $('.MyAccountOverlay-SignInButton button')
-    }
+  get btnSubmit() {
+    return $("~test-LOGIN");
+  }
 
-    get btnSignOut() {
-        return $$('.MyAccountTabListItem_type_SignOut button')
-    }
+  async login(username, password) {
+    await this.inputUsername.setValue(username);
+    await this.inputPassword.setValue(password);
+    await driver.pause(500);
+    await this.btnSubmit.click();
+  }
 
-    async login(username, password) {
-        await this.btnMyAccount.click()
-        await this.loginOutIfAlreadyLogin()
-        await this.inputUsername.setValue(username)
-        await this.inputPassword.setValue(password)
-        await driver.pause(500)
-        await this.btnSubmit.click()        
-    }
-
-    async open() {
-        await driver.pause(20000)
-        await driver.hideKeyboard();
-        await driver.getContexts()
-        await driver.switchContext('WEBVIEW_chrome')
-        await driver.deleteCookies()        
-    }
-
-    async loginOutIfAlreadyLogin() {
-        const count = await this.btnSignOut.length
-        if (count>0) {
-            await this.btnSignOut[0].click()
-            await driver.pause(20000)
-            await this.btnMyAccount.click()
-        }
-    }
+  async open() {
+    await driver.pause(10000);
+  }
 }
 
-export default new LoginPage()
+export default new LoginPage();

@@ -3,14 +3,13 @@ Feature: iOS - Login Feature
   Scenario Outline: As a user, I can log into the application area "<username>"
     Given I am on the login page
     When I login with "<username>" and "<password>"
-    Then I should see a flash message saying "<message>"
+    Then I should see HomePage
 
     Examples:
-      | username                | password    | message                         |
-      | masafidubai@yopmail.com | Random@1234 | You are successfully logged in! |
-      # | test@yopmail.com        | Random@1234 | You are successfully logged in! |
+      | username      | password     | 
+      | standard_user | secret_sauce |
 
   Scenario: An invalid user should not be able to log-in
     Given I am on the login page
     When I login with "test@yopmail.com" and " Random@1234"
-    Then I should see a flash message saying "Sorry we didn't recognize your details. Please check your email and password"
+    Then I should see a Error Message

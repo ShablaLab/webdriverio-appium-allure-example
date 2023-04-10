@@ -15,7 +15,7 @@ const iosConfig = Object.assign(
                 // 'appium:platformVersion': '15.5',
                 'appium:orientation': 'PORTRAIT',
                 'appium:automationName': 'XCUITest',
-                'appium:app': './apps/masafi.app',
+                'appium:app': './apps/iOS.SauceLabs.Mobile.Sample.app.2.7.1.zip',
                 'appium:appWaitDuration': 120000,
                 'appium:newCommandTimeout': 240,
             },
